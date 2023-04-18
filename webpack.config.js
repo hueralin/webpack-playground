@@ -53,7 +53,7 @@ module.exports = {
           test: /[\\/]node_modules[\\/]lodash[\\/]/,
           chunks: 'all',
           priority: 2
-        }
+        },
         // 上面的结果是 lodash 被分配到一个 lodash-hahaha.bundle.js
         // 其余 node_modules 里的被业务代码引用过的包被分配到一个 node_modules.bundle.js
         
@@ -61,7 +61,30 @@ module.exports = {
         // lodash-hahaha.bundle.js 550 KiB
         // main.bundle.js 34.4 KiB
         // sum.bundle.js 9 KiB
+
+        // SplitChunks 默认有两个缓存组：vender 和 default
+        // vendors 缓存组，它的 test 设置为 /[\\/]node_modules[\\/]/ 表示只筛选从 node_modules 文件夹下引入的模块
+        // default 缓存组，它会将至少有两个 chunk 引入的模块进行拆分，它的权重小于 vendors
+        // vendors: {
+        //   test: /[\\/]node_modules[\\/]/,
+        //   priority: -10
+        // },
+        // default: {
+        //   // 如果同一个模块被引用了 2 次或以上，那么将其拆分到 default 缓存组
+        //   minChunks: 2,
+        //   priority: -20,
+        //   // 表示是否复用已被拆分的模块，true 表示如果当前 chunk 引用的模块在之前已经拆分出去了，那么直接使用之前拆分模块而不生成新的
+        //   reuseExistingChunk: true
+        // }
+        // 如果不想使用两个默认的缓存组，可以将它们都设置为 false
+        // vendors: false,
+        // default: false
       }
     }
   }
 }
+
+// 参考资料：
+// https://juejin.cn/post/6919684767575179278
+// https://www.cnblogs.com/kwzm/p/10315080.html
+// https://github.com/VenenoFSD/Learn-Webpack4/issues/14
